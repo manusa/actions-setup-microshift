@@ -59,11 +59,13 @@ const run = async () => {
   core.info('Waiting for MicroShift to be ready');
   // Wait for the Pods to be listed
   logExecSync(
-    "bash -c 'SECONDS=0; until kubectl get pods -A | grep kube-system || (( SECONDS >= 90 )); do sleep 1; done'"
+    "bash -c 'SECONDS=0; until kubectl get pods -A 2>/dev/null | grep kube-system || (( SECONDS >= 90 )); do sleep 1; done'"
   );
   logExecSync('kubectl wait --for=condition=ready --timeout=30s nodes --all');
   logExecSync(`kubectl get nodes`);
-  logExecSync('kubectl wait --for=condition=ready --timeout=120s pods --all -A');
+  logExecSync(
+    'kubectl wait --for=condition=ready --timeout=120s pods --all -A'
+  );
 };
 
 run()
