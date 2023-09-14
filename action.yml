@@ -4,9 +4,6 @@ author: 'Marc Nuri'
 branding:
   icon: circle
   color: red
-inputs:
-  github token:
-    description: 'GITHUB_TOKEN to be able to perform requests to GH REST API (with no limit)'
 runs:
   using: 'node20'
   main: 'src/index.js'
