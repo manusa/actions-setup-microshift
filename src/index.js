@@ -6,6 +6,7 @@ const {installCrio} = require('./configure-environment');
 
 const crioVersion = 'v1.22.5'; // latter versions won't work
 const microShiftVersion = '4.8.0-0.microshift-2022-04-20-182108'; // latest binary available on GitHub
+const baseDomain = '127.0.0.1.nip.io';
 const kubeConfigPath = '/var/lib/microshift/resources/kubeadmin/kubeconfig';
 
 const indent = (bufferOrString, spaces = 4) => {
@@ -33,11 +34,20 @@ const run = async () => {
   const crioInfo = await installCrio({version: crioVersion});
   console.log(indent(crioInfo));
 
+  console.log(' ▪ Installing MicroShift');
   logExecSync(
     `curl -LO https://github.com/openshift/microshift/releases/download/${microShiftVersion}/microshift-linux-amd64`
   );
   logExecSync('sudo chmod a+x microshift-linux-amd64');
   logExecSync('sudo mv microshift-linux-amd64 /usr/local/bin/microshift');
+
+  logExecSync('sudo mkdir -p /etc/microshift');
+  logExecSync(`sudo sh -c 'cat > /etc/microshift/config.yaml' << EOF
+    dns:
+      baseDomain: ${baseDomain}
+    cluster:
+      domain: ${baseDomain}
+  EOF`);
 
   logExecSync(`sudo sh -c 'cat > /usr/lib/systemd/system/microshift.service' << EOF
     [Unit]
