@@ -2,10 +2,23 @@
 
 const core = require('@actions/core');
 const {logExecSync} = require('./exec');
+const {installCrio} = require('./configure-environment');
 
 const crioVersion = 'v1.22.5'; // latter versions won't work
 const microShiftVersion = '4.8.0-0.microshift-2022-04-20-182108'; // latest binary available on GitHub
 const kubeConfigPath = '/var/lib/microshift/resources/kubeadmin/kubeconfig';
+
+const indent = (bufferOrString, spaces = 4) => {
+  const prefix = ' '.repeat(spaces);
+  return bufferOrString
+    .toString()
+    .trim()
+    .split('\n')
+    .reduce((acc, l) => {
+      acc += `${prefix}${l}\n`;
+      return acc;
+    }, '');
+};
 
 const run = async () => {
   core.info('Updating Environment configuration to support MicroShift');
@@ -16,12 +29,9 @@ const run = async () => {
       ' jq' // needed by cri-o install script
   );
 
-  logExecSync(
-    `curl https://raw.githubusercontent.com/cri-o/cri-o/${crioVersion}/scripts/get | sudo bash`
-  );
-  logExecSync('sudo systemctl enable crio --now');
-  // Show crictl debug info
-  logExecSync('sudo crictl version');
+  console.log(' ▪ Installing CRI-O');
+  const crioInfo = await installCrio({version: crioVersion});
+  console.log(indent(crioInfo));
 
   logExecSync(
     `curl -LO https://github.com/openshift/microshift/releases/download/${microShiftVersion}/microshift-linux-amd64`
