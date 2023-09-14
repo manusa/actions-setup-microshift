@@ -2,7 +2,7 @@
 
 const core = require('@actions/core');
 const {logExecSync} = require('./exec');
-const {installCrio} = require('./configure-environment');
+const {installUbuntuPackages, installCrio} = require('./configure-environment');
 
 const crioVersion = 'v1.22.5'; // latter versions won't work
 const microShiftVersion = '4.8.0-0.microshift-2022-04-20-182108'; // latest binary available on GitHub
@@ -23,12 +23,9 @@ const indent = (bufferOrString, spaces = 4) => {
 
 const run = async () => {
   core.info('Updating Environment configuration to support MicroShift');
-  logExecSync('sudo apt update -y');
-  logExecSync(
-    'sudo apt-get install -y' + // Install packaged dependencies
-      ' conntrack' + // needed by cri-o / containers
-      ' jq' // needed by cri-o install script
-  );
+
+  console.log(' ▪ Installing required packages');
+  await installUbuntuPackages();
 
   console.log(' ▪ Installing CRI-O');
   const crioInfo = await installCrio({version: crioVersion});
