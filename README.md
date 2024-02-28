@@ -2,6 +2,10 @@ Setup MicroShift GitHub Action
 ==============================
 [<img src="https://github.com/manusa/actions-setup-microshift/actions/workflows/runner.yml/badge.svg"/>](https://github.com/manusa/actions-setup-microshift/actions/workflows/runner.yml)
 
+Sets up a MicroShift 4.8 cluster in a GitHub Actions workflow job.
+
+TODO: Support for BuildConfig (via hack)
+
 ## Usage
 
 ```yaml
@@ -21,6 +25,14 @@ jobs:
       - name: Interact with the cluster
         run: kubectl get nodes
 ```
+
+## Why is only 4.8 supported?
+
+- https://github.com/openshift/microshift/issues/1206
+- https://issues.redhat.com/browse/USHIFT-395
+- https://issues.redhat.com//browse/USHIFT-599
+- Requirements for [OVN-Kubernetes](https://github.com/ovn-org/ovn-kubernetes/) network (can't be easily installed on Ubuntu)
+
 
 ## License
 
